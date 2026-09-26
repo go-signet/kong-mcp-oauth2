@@ -242,9 +242,16 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	}
 
 	if len(conf.RequiredScopes) > 0 && !hasAllScopes(scope, conf.RequiredScopes) {
-		challenge(403,
-			fmt.Sprintf(`%s, error="insufficient_scope", scope="%s"`, conf.bearerMeta, conf.requiredScopeStr),
-			"insufficient_scope", "requires scope: "+conf.requiredScopeStr)
+		challenge(
+			403,
+			fmt.Sprintf(
+				`%s, error="insufficient_scope", scope="%s"`,
+				conf.bearerMeta,
+				conf.requiredScopeStr,
+			),
+			"insufficient_scope",
+			"requires scope: "+conf.requiredScopeStr,
+		)
 		return
 	}
 

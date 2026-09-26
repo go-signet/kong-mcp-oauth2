@@ -100,11 +100,26 @@ func fetchJWKSURI(issuer string) (string, error) {
 			continue
 		}
 		if meta.Issuer != issuer {
-			errs = append(errs, fmt.Errorf("%s: metadata issuer %q does not match configured issuer %q", mdURL, meta.Issuer, issuer))
+			errs = append(
+				errs,
+				fmt.Errorf(
+					"%s: metadata issuer %q does not match configured issuer %q",
+					mdURL,
+					meta.Issuer,
+					issuer,
+				),
+			)
 			continue
 		}
 		if !isAbsHTTPURL(meta.JWKSURI) {
-			errs = append(errs, fmt.Errorf("%s: metadata jwks_uri %q is not an absolute http(s) URL", mdURL, meta.JWKSURI))
+			errs = append(
+				errs,
+				fmt.Errorf(
+					"%s: metadata jwks_uri %q is not an absolute http(s) URL",
+					mdURL,
+					meta.JWKSURI,
+				),
+			)
 			continue
 		}
 		return meta.JWKSURI, nil
@@ -141,7 +156,13 @@ func discoverJWKSURI(issuer string) (string, error) {
 	uri, err := fetchJWKSURI(issuer)
 	if err != nil {
 		if ok { // stale entry: extend it rather than failing live traffic
-			slog.Error("AS metadata refresh failed; keeping cached jwks_uri", "issuer", issuer, "error", err)
+			slog.Error(
+				"AS metadata refresh failed; keeping cached jwks_uri",
+				"issuer",
+				issuer,
+				"error",
+				err,
+			)
 			uri = e.jwksURI
 		} else {
 			return "", err
