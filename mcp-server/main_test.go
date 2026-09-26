@@ -45,8 +45,10 @@ func callWhoami(t *testing.T, ts *httptest.Server, headers map[string]string) Ou
 	defer cancel()
 
 	transport := &mcp.StreamableClientTransport{
-		Endpoint:   ts.URL,
-		HTTPClient: &http.Client{Transport: headerRoundTripper{base: http.DefaultTransport, headers: headers}},
+		Endpoint: ts.URL,
+		HTTPClient: &http.Client{
+			Transport: headerRoundTripper{base: http.DefaultTransport, headers: headers},
+		},
 	}
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "v0.0.0"}, nil)
 	session, err := client.Connect(ctx, transport, nil)
@@ -215,7 +217,11 @@ func TestWhoami_NonMCPRequestDoesNotCrash(t *testing.T) {
 	})
 
 	// Server survived: a valid MCP call still works.
-	out := callWhoami(t, ts, map[string]string{"X-MCP-Subject": "carol", "X-MCP-Scope": "mcp:gitea"})
+	out := callWhoami(
+		t,
+		ts,
+		map[string]string{"X-MCP-Subject": "carol", "X-MCP-Scope": "mcp:gitea"},
+	)
 	if out.Subject != "carol" || out.Scope != "mcp:gitea" {
 		t.Errorf("after bad input, got %+v, want subject=carol scope=mcp:gitea", out)
 	}

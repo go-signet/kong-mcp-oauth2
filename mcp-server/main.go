@@ -32,16 +32,16 @@ const healthPath = "/healthz"
 // the one field this process knows on its own (not from Kong) — it answers
 // "which MCP route handled this call" when one binary backs several.
 type Output struct {
-	Subject  string   `json:"subject" jsonschema:"the X-MCP-Subject the gateway forwarded (token sub)"`
-	Scope    string   `json:"scope" jsonschema:"the raw X-MCP-Scope the gateway forwarded (space-delimited token scope)"`
-	Scopes   []string `json:"scopes" jsonschema:"the scope split into individual grants"`
-	Server   string   `json:"server" jsonschema:"which logical MCP server answered (MCP_SERVER_NAME)"`
-	Host     string   `json:"host,omitempty" jsonschema:"the gateway host the client reached (X-Forwarded-Host)"`
-	Issuer   string   `json:"issuer,omitempty" jsonschema:"the token issuer the gateway forwarded (token iss)"`
+	Subject  string   `json:"subject"            jsonschema:"the X-MCP-Subject the gateway forwarded (token sub)"`
+	Scope    string   `json:"scope"              jsonschema:"the raw X-MCP-Scope the gateway forwarded (space-delimited token scope)"`
+	Scopes   []string `json:"scopes"             jsonschema:"the scope split into individual grants"`
+	Server   string   `json:"server"             jsonschema:"which logical MCP server answered (MCP_SERVER_NAME)"`
+	Host     string   `json:"host,omitempty"     jsonschema:"the gateway host the client reached (X-Forwarded-Host)"`
+	Issuer   string   `json:"issuer,omitempty"   jsonschema:"the token issuer the gateway forwarded (token iss)"`
 	Audience string   `json:"audience,omitempty" jsonschema:"the audience the token was bound to (token aud)"`
-	Client   string   `json:"client,omitempty" jsonschema:"the OAuth client the token was issued to (client_id/azp)"`
+	Client   string   `json:"client,omitempty"   jsonschema:"the OAuth client the token was issued to (client_id/azp)"`
 	TokenID  string   `json:"token_id,omitempty" jsonschema:"the token's unique id (token jti)"`
-	Expires  string   `json:"expires,omitempty" jsonschema:"when the access token expires, RFC 3339 (token exp)"`
+	Expires  string   `json:"expires,omitempty"  jsonschema:"when the access token expires, RFC 3339 (token exp)"`
 }
 
 // whoami reads the trusted identity headers off the inbound HTTP request that
@@ -52,7 +52,11 @@ type Output struct {
 // req.Extra is nil on transports that don't carry an HTTP request (e.g. stdio),
 // so guard it before reaching for .Header. http.Header.Get is nil-safe, so an
 // absent header simply yields "" — no panic, the server stays up.
-func whoami(_ context.Context, req *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, Output, error) {
+func whoami(
+	_ context.Context,
+	req *mcp.CallToolRequest,
+	_ struct{},
+) (*mcp.CallToolResult, Output, error) {
 	var h http.Header
 	if req != nil && req.Extra != nil {
 		h = req.Extra.Header
@@ -87,7 +91,10 @@ func newHandler() http.Handler {
 		Name:        "whoami",
 		Description: "Return the caller identity the gateway forwarded (subject, scope, issuer, audience, client, token id, expiry) and which MCP server answered",
 	}, whoami)
-	mcpHandler := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return server }, nil)
+	mcpHandler := mcp.NewStreamableHTTPHandler(
+		func(*http.Request) *mcp.Server { return server },
+		nil,
+	)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(healthPath, func(w http.ResponseWriter, _ *http.Request) {
@@ -103,7 +110,11 @@ func main() {
 	// /healthz and exits 0/1. The distroless image has no shell or curl, so the
 	// HEALTHCHECK can't shell out — re-invoking the binary is the only probe
 	// available. flag.Parse stays cheap for the normal server path.
-	healthCheck := flag.Bool("health", false, "probe the local /healthz endpoint and exit (for container HEALTHCHECK)")
+	healthCheck := flag.Bool(
+		"health",
+		false,
+		"probe the local /healthz endpoint and exit (for container HEALTHCHECK)",
+	)
 	flag.Parse()
 	if *healthCheck {
 		os.Exit(runHealthCheck("http://127.0.0.1:" + port() + healthPath))

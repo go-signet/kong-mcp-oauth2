@@ -75,7 +75,10 @@ func (conf *Config) setup() error {
 			}
 		}
 		if len(missing) > 0 {
-			conf.setupErr = fmt.Errorf("missing required plugin config: %s", strings.Join(missing, ", "))
+			conf.setupErr = fmt.Errorf(
+				"missing required plugin config: %s",
+				strings.Join(missing, ", "),
+			)
 			return
 		}
 
@@ -117,7 +120,10 @@ func (conf *Config) setup() error {
 		// could then never match. Reject loudly instead. (A trailing slash is
 		// NOT rejected: some ASes — e.g. Auth0 — legitimately use one, and it
 		// works as long as the token's iss and the metadata issuer carry it too.)
-		if parsed, err := url.Parse(conf.Issuer); err == nil && (parsed.RawQuery != "" || parsed.Fragment != "") {
+		if parsed, err := url.Parse(
+			conf.Issuer,
+		); err == nil &&
+			(parsed.RawQuery != "" || parsed.Fragment != "") {
 			invalid = append(invalid, "issuer must not contain a query or fragment (RFC 8414)")
 		}
 		if conf.LeewaySeconds < 0 {
@@ -129,7 +135,10 @@ func (conf *Config) setup() error {
 		}
 
 		conf.prmPath = wellKnownPrefix + conf.ResourcePath
-		conf.bearerMeta = fmt.Sprintf(`Bearer resource_metadata="%s"`, conf.GatewayOrigin+conf.prmPath)
+		conf.bearerMeta = fmt.Sprintf(
+			`Bearer resource_metadata="%s"`,
+			conf.GatewayOrigin+conf.prmPath,
+		)
 		conf.requiredScopeStr = strings.Join(conf.RequiredScopes, " ")
 
 		opts := []jwt.ParserOption{
