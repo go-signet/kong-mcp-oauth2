@@ -14,6 +14,9 @@
 FROM golang:1.26 AS build
 ARG TARGETOS
 ARG TARGETARCH
+# Optional module proxy (e.g. a corporate mirror when outbound TLS is
+# intercepted). Empty keeps the Go default.
+ARG GOPROXY
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
