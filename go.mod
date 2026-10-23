@@ -1,6 +1,6 @@
 module github.com/go-authgate/kong-mcp-oauth2
 
-go 1.25.10
+go 1.26.10
 
 require (
 	github.com/Kong/go-pdk v0.11.0

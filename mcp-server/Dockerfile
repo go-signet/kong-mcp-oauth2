@@ -2,7 +2,7 @@
 # Standalone service — no Kong base image here. Mirrors the root Dockerfile's
 # build style (CGO off, trimmed/stripped, honors TARGETOS/TARGETARCH so a
 # `--platform` build cross-compiles to the final image's arch).
-FROM golang:1.26 AS build
+FROM golang:1.26.10 AS build
 ARG TARGETOS
 ARG TARGETARCH
 WORKDIR /src
