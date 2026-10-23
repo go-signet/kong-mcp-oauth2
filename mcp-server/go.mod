@@ -1,6 +1,6 @@
 module github.com/go-authgate/kong-mcp-oauth2/mcp-server
 
-go 1.25.10
+go 1.26.10
 
 require github.com/modelcontextprotocol/go-sdk v1.6.1
 
