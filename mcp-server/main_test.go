@@ -41,7 +41,7 @@ func (h headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 // and returns the whoami tool's structured Subject/Scope output.
 func callWhoami(t *testing.T, ts *httptest.Server, headers map[string]string) Output {
 	t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	transport := &mcp.StreamableClientTransport{
